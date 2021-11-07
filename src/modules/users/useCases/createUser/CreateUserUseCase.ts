@@ -1,5 +1,8 @@
 import { User } from "../../model/User";
-import { IUsersRepository } from "../../repositories/IUsersRepository";
+import {
+  ICreateUserDTO,
+  IUsersRepository,
+} from "../../repositories/IUsersRepository";
 
 interface IRequest {
   name: string;
@@ -10,7 +13,18 @@ class CreateUserUseCase {
   constructor(private usersRepository: IUsersRepository) {}
 
   execute({ email, name }: IRequest): User {
-    // Complete aqui
+    if (this.usersRepository.findByEmail(email)) {
+      throw new Error("User already exists");
+    }
+
+    const user: ICreateUserDTO = {
+      email,
+      name,
+    };
+
+    const createdUser = this.usersRepository.create(user);
+
+    return createdUser;
   }
 }
 
